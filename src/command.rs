@@ -7,7 +7,7 @@ use nix::{
     },
     unistd::{execvpe, Pid},
 };
-use std::{ffi::CString, net::TcpStream, thread::sleep, time::Duration};
+use std::ffi::CString;
 
 const STACK_SIZE: usize = 1024 * 1024;
 
@@ -23,7 +23,7 @@ impl Command {
         }
         Command {
             program: CString::new(env_args[1].clone()).expect("cannot parse args"),
-            args: env_args[2..]
+            args: env_args[1..]
                 .iter()
                 .map(|s| CString::new(s.clone()).expect("cannot pars args"))
                 .collect(),
@@ -48,19 +48,16 @@ impl Command {
         traceme().unwrap();
         raise(Signal::SIGSTOP).unwrap();
         // get os env
-        // let env_vars: Vec<CString> = std::env::vars()
-        //     .map(|(k, v)| CString::new(format!("{}={}", k, v)).unwrap())
-        //     .collect();
-        // match execvpe::<CString, CString>(&self.program, &self.args, &env_vars) {
-        //     Ok(_) => 0,
-        //     Err(err) => {
-        //         log::error!("error: '{}' occurred when execute {:?}", err, self.program);
-        //         -1
-        //     }
-        // }
-        let _stream = TcpStream::connect("13.107.21.200:443").unwrap();
-        sleep(Duration::from_secs(5));
-        0
+        let env_vars: Vec<CString> = std::env::vars()
+            .map(|(k, v)| CString::new(format!("{}={}", k, v)).unwrap())
+            .collect();
+        match execvpe::<CString, CString>(&self.program, &self.args, &env_vars) {
+            Ok(_) => 0,
+            Err(err) => {
+                log::error!("error: '{}' occurred when execute {:?}", err, self.program);
+                -1
+            }
+        }
     }
 }
 

@@ -1,4 +1,22 @@
-only support ipv4 tcp
+# What is this
+This is a simple tool to redirect tcp traffic from any application to http proxy.
+# Usage
+`[RUST_LOG=info] cargo run <command> [args]`
+
+>note:only support ipv4 tcp
+
+# How it works
+use ptrace to trace the process and redirect tcp packet to proxy port by modify `connect` syscall arguments.
+
+# Acknowledgements and References
+[graftcp](https://github.com/hmgle/graftcp)
+
+# todo
+- [ ] not hard code proxy port 10810
+- [ ] support ipv6
+- [ ] use ebpf instead of ptrace to improve performance
+
+# My notes from manpage
 
 ptrace:
 >The call
